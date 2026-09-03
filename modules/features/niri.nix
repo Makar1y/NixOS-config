@@ -4,6 +4,9 @@
 		imports = [ wlib.wrapperModules.niri ];
 		settings = {
 			input.keyboard.xkb.layout = "us,lt,ru";
+			input.touchpad = {
+				tap = _: { };
+			};
 			layout.gaps = 5;
 			layout.default-column-width = _: { content.proportion = 0.5; };
 			spawn-at-startup = [
