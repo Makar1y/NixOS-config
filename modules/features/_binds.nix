@@ -3,7 +3,7 @@
 
 	"Mod+Space".spawn-sh = "noctalia-shell ipc call launcher toggle";
 	"Mod+T".spawn = "alacritty";
-	"Mod+D".spawn = "fuzzel";
+	# "Mod+D".spawn = "fuzzel";
 	"Mod+S".spawn-sh = "noctalia-shell ipc call settings toggle";
 	"Mod+O".toggle-overview = _: { repeat = false; };
 	"Mod+Q".close-window = _: { repeat = false; };
