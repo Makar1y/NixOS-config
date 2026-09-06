@@ -6,7 +6,7 @@
 	"Mod+Return".spawn = "alacritty";
 	"Mod+B".spawn = "firefox";
 	"Mod+Shift+Return".spawn = "firefox";
-	"Mod+Shift+M".spawn = "alacritty";
+	"Mod+Shift+M".spawn = "spotify";
 	# "Mod+D".spawn = "fuzzel";
 	"Mod+S".spawn-sh = "noctalia-shell ipc call settings toggle";
 	"Mod+Escape".spawn-sh = "noctalia-shell ipc call sessionMenu toggle";
