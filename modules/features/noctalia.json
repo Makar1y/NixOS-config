@@ -244,11 +244,11 @@
       "autoStartAuth": false,
       "allowPasswordWithFprintd": false,
       "clockStyle": "custom",
-      "clockFormat": "YYYY-MM-dd MMM ddd hh:mm:ss",
+      "clockFormat": "yyyy-MM-dd MMMMMMMMMM dddddddddd hh:mm:ss",
       "passwordChars": true,
       "lockScreenMonitors": [],
-      "lockScreenBlur": 0.1,
-      "lockScreenTint": 0.1,
+      "lockScreenBlur": 0.3,
+      "lockScreenTint": 0.3,
       "keybinds": {
         "keyUp": [
           "Up"
