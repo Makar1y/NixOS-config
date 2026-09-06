@@ -716,7 +716,7 @@
     },
     "idle": {
       "enabled": true,
-      "screenOffTimeout": 600,
+      "screenOffTimeout": 660,
       "lockTimeout": 660,
       "suspendTimeout": 900,
       "fadeDuration": 5,
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/2-geometric.jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/smeshariki2.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {

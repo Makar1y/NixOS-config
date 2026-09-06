@@ -24,6 +24,9 @@
 					clip-to-geometry = true;
 				}
 			];
+			cursor = {
+				"xcursor-size" = 16;
+			};
 			gestures.hot-corners = { off = _: { }; }; 
 			hotkey-overlay = { skip-at-startup = _: { }; };
 			spawn-at-startup = [
