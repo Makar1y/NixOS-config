@@ -75,6 +75,12 @@
   # Install firefox.
   programs.firefox.enable = true;
 
+  # Aliases for all shells
+  environment.shellAliases = {
+    ls = "lsd";
+    cat = "bat";
+  };
+
   # Fish shell with zoxide (z), bat (cat) and lsd (ls)
   programs.fish = {
     enable = true;
@@ -135,12 +141,16 @@
          opencode
          androidStudioPackages.stable
          alacritty
+         discord
+         telegram-desktop
          fuzzel
          spotify
          git
          zoxide
          bat
          lsd
+         (nerd-fonts.symbols-only)
+         (nerd-fonts.jetbrains-mono)
          self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
       ];
    };

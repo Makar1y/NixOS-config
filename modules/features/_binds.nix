@@ -5,6 +5,7 @@
 	"Mod+T".spawn = "alacritty";
 	# "Mod+D".spawn = "fuzzel";
 	"Mod+S".spawn-sh = "noctalia-shell ipc call settings toggle";
+	"Mod+Escape".spawn-sh = "noctalia-shell ipc call sessionMenu toggle";
 	"Mod+O".toggle-overview = _: { repeat = false; };
 	"Mod+Q".close-window = _: { repeat = false; };
 
@@ -128,11 +129,18 @@
 	"XF86AudioRaiseVolume".spawn-sh = "noctalia-shell ipc call volume increase";
 	"XF86AudioLowerVolume".spawn-sh = "noctalia-shell ipc call volume decrease";
 	"XF86AudioMute".spawn-sh = "noctalia-shell ipc call volume muteOutput";
+	"XF86AudioMicMute".spawn-sh = "noctalia-shell ipc call volume muteInput";
+	"XF86AudioPlay".spawn-sh = "noctalia-shell ipc call media playPause";
+	"XF86AudioPause".spawn-sh = "noctalia-shell ipc call media pause";
+	"XF86AudioStop".spawn-sh = "noctalia-shell ipc call media stop";
+	"XF86AudioNext".spawn-sh = "noctalia-shell ipc call media next";
+	"XF86AudioPrev".spawn-sh = "noctalia-shell ipc call media previous";
 	"XF86MonBrightnessUp".spawn-sh = "noctalia-shell ipc call brightness increase";
 	"XF86MonBrightnessDown".spawn-sh = "noctalia-shell ipc call brightness decrease";
 
-	"Mod+Escape" = _: { props.allow-inhibiting = false; content.toggle-keyboard-shortcuts-inhibit = _: { }; };
+	"Mod+Shift+Escape" = _: { props.allow-inhibiting = false; content.toggle-keyboard-shortcuts-inhibit = _: { }; };
 	"Mod+Shift+E".quit = _: { };
 	"Ctrl+Alt+Delete".quit = _: { };
 	"Mod+Shift+P".power-off-monitors = _: { };
+	"Mod+Shift+W".spawn-sh = "noctalia-shell ipc call wallpaper random";
 }
