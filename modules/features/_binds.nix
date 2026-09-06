@@ -1,5 +1,5 @@
 {
-	"Mod+Shift+Slash".show-hotkey-overlay = _: { };
+	"Mod+Shift+Slash".spawn-sh = "noctalia-shell ipc call plugin togglePanek keybind-cheatsheet";
 
 	"Mod+Space".spawn-sh = "noctalia-shell ipc call launcher toggle";
 	"Mod+T".spawn = "alacritty";

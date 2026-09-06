@@ -114,12 +114,12 @@
             "visualizerType": "linear"
           },
           {
-            "clockColor": "primary",
+            "clockColor": "none",
             "customFont": "",
-            "formatHorizontal": "HH:mm:ss  MM-dd",
+            "formatHorizontal": "HH:mm:ss ddd, MMM dd",
             "formatVertical": "HH mm - dd MM",
             "id": "Clock",
-            "tooltipFormat": "HH:mm:ss dddd, MMMM dd",
+            "tooltipFormat": "HH:mm:ss ddd, MMM dd",
             "useCustomFont": false
           },
           {
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/1-synth-scape.jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/smeshariki2.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {

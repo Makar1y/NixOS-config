@@ -10,8 +10,21 @@
 			input.touchpad = {
 				tap = _: { };
 			};
-			layout.gaps = 5;
-			gestures.hot-corners = { off = _: { }; };
+			layout = {
+				gaps = 10;
+				focus-ring = {
+					width = 2;
+				};
+			};
+			window-rules = [
+				{
+					draw-border-with-background = false;
+					geometry-corner-radius = 12;
+					clip-to-geometry = true;
+				}
+			];
+			gestures.hot-corners = { off = _: { }; }; 
+			hotkey-overlay = { skip-at-startup = _: { }; };
 			spawn-at-startup = [
 				"noctalia-shell"
 			];

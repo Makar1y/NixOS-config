@@ -84,6 +84,10 @@
   # Fish shell with zoxide (z), bat (cat) and lsd (ls)
   programs.fish = {
     enable = true;
+    shellInit = ''
+      set -U fish_greeting
+      fastfetch
+    '';
     shellAliases = {
       ls = "lsd";
       cat = "bat";
@@ -134,7 +138,7 @@
 
        nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-       environment.systemPackages = with pkgs; [
+environment.systemPackages = with pkgs; [
          firefox
          vscode.fhs
          neovim
@@ -149,10 +153,16 @@
          zoxide
          bat
          lsd
+         fastfetch
          (nerd-fonts.symbols-only)
          (nerd-fonts.jetbrains-mono)
          self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
       ];
+
+     # Symlink the Alacritty config into the user home
+     systemd.tmpfiles.rules = [
+       "L+ /home/m1y/.config/alacritty/alacritty.toml - - - - ${./alacritty.toml}"
+     ];
    };
 
 }
