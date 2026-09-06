@@ -3,6 +3,7 @@
 	flake.wrappers.niri = { pkgs, wlib, ... }: {
 		imports = [ wlib.wrapperModules.niri ];
 		settings = {
+			prefer-no-csd = _: { };
 			input.keyboard.xkb = {
 				layout = "us,lt,ru";
 				options = "grp:alt_shift_toggle";
