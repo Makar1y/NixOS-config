@@ -65,6 +65,7 @@
   users.users."m1y" = {
     isNormalUser = true;
     description = "Makariy";
+    shell = pkgs.fish;
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     #  thunderbird
@@ -85,6 +86,7 @@
   programs.zoxide = {
     enable = true;
     enableFishIntegration = true;
+    flags = [ "--cmd" "cd" ];
   };
 
   # Allow unfree packages
@@ -131,7 +133,8 @@
          vscode.fhs
          neovim
          opencode
-         self.packages.${pkgs.stdenv.hostPlatform.system}.alacritty
+         androidStudioPackages.stable
+         alacritty
          fuzzel
          spotify
          git
