@@ -3,6 +3,9 @@
 
 	"Mod+Space".spawn-sh = "noctalia-shell ipc call launcher toggle";
 	"Mod+T".spawn = "alacritty";
+	"Mod+Enter".spawn = "alacritty";
+	"Mod+B".spawn = "firefox";
+	"Mod+Shift+Enter".spawn = "firefox";
 	# "Mod+D".spawn = "fuzzel";
 	"Mod+S".spawn-sh = "noctalia-shell ipc call settings toggle";
 	"Mod+Escape".spawn-sh = "noctalia-shell ipc call sessionMenu toggle";
@@ -18,28 +21,28 @@
 	"Mod+K".focus-window-up = _: { };
 	"Mod+L".focus-column-or-monitor-right = _: { };
 
-	"Mod+Ctrl+Left".move-column-left = _: { };
-	"Mod+Ctrl+Down".move-window-down = _: { };
-	"Mod+Ctrl+Up".move-window-up = _: { };
-	"Mod+Ctrl+Right".move-column-right = _: { };
-	"Mod+Ctrl+H".move-column-left = _: { };
-	"Mod+Ctrl+J".move-window-down = _: { };
-	"Mod+Ctrl+K".move-window-up = _: { };
-	"Mod+Ctrl+L".move-column-right = _: { };
+	"Mod+Shift+Left".move-column-left = _: { };
+	"Mod+Shift+Down".move-window-down = _: { };
+	"Mod+Shift+Up".move-window-up = _: { };
+	"Mod+Shift+Right".move-column-right = _: { };
+	"Mod+Shift+H".move-column-left = _: { };
+	"Mod+Shift+J".move-window-down = _: { };
+	"Mod+Shift+K".move-window-up = _: { };
+	"Mod+Shift+L".move-column-right = _: { };
 
 	"Mod+Home".focus-column-first = _: { };
 	"Mod+End".focus-column-last = _: { };
 	"Mod+Ctrl+Home".move-column-to-first = _: { };
 	"Mod+Ctrl+End".move-column-to-last = _: { };
 
-	"Mod+Shift+Left".focus-monitor-left = _: { };
-	"Mod+Shift+Down".focus-monitor-down = _: { };
-	"Mod+Shift+Up".focus-monitor-up = _: { };
-	"Mod+Shift+Right".focus-monitor-right = _: { };
-	"Mod+Shift+H".focus-monitor-left = _: { };
-	"Mod+Shift+J".focus-monitor-down = _: { };
-	"Mod+Shift+K".focus-monitor-up = _: { };
-	"Mod+Shift+L".focus-monitor-right = _: { };
+	"Mod+Ctrl+Left".focus-monitor-left = _: { };
+	"Mod+Ctrl+Down".focus-monitor-down = _: { };
+	"Mod+Ctrl+Up".focus-monitor-up = _: { };
+	"Mod+Ctrl+Right".focus-monitor-right = _: { };
+	"Mod+Ctrl+H".focus-monitor-left = _: { };
+	"Mod+Ctrl+J".focus-monitor-down = _: { };
+	"Mod+Ctrl+K".focus-monitor-up = _: { };
+	"Mod+Ctrl+L".focus-monitor-right = _: { };
 
 	"Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
 	"Mod+Ctrl+Shift+Down".move-column-to-monitor-down = _: { };
@@ -86,15 +89,15 @@
 	"Mod+7".focus-workspace = 7;
 	"Mod+8".focus-workspace = 8;
 	"Mod+9".focus-workspace = 9;
-	"Mod+Ctrl+1".move-column-to-workspace = 1;
-	"Mod+Ctrl+2".move-column-to-workspace = 2;
-	"Mod+Ctrl+3".move-column-to-workspace = 3;
-	"Mod+Ctrl+4".move-column-to-workspace = 4;
-	"Mod+Ctrl+5".move-column-to-workspace = 5;
-	"Mod+Ctrl+6".move-column-to-workspace = 6;
-	"Mod+Ctrl+7".move-column-to-workspace = 7;
-	"Mod+Ctrl+8".move-column-to-workspace = 8;
-	"Mod+Ctrl+9".move-column-to-workspace = 9;
+	"Mod+Shift+1".move-column-to-workspace = 1;
+	"Mod+Shift+2".move-column-to-workspace = 2;
+	"Mod+Shift+3".move-column-to-workspace = 3;
+	"Mod+Shift+4".move-column-to-workspace = 4;
+	"Mod+Shift+5".move-column-to-workspace = 5;
+	"Mod+Shift+6".move-column-to-workspace = 6;
+	"Mod+Shift+7".move-column-to-workspace = 7;
+	"Mod+Shift+8".move-column-to-workspace = 8;
+	"Mod+Shift+9".move-column-to-workspace = 9;
 
 	"Mod+BracketLeft".consume-or-expel-window-left = _: { };
 	"Mod+BracketRight".consume-or-expel-window-right = _: { };
@@ -139,8 +142,8 @@
 	"XF86MonBrightnessDown".spawn-sh = "noctalia-shell ipc call brightness decrease";
 
 	"Mod+Shift+Escape" = _: { props.allow-inhibiting = false; content.toggle-keyboard-shortcuts-inhibit = _: { }; };
-	"Mod+Shift+E".quit = _: { };
-	"Ctrl+Alt+Delete".quit = _: { };
+	# "Mod+Shift+E".quit = _: { };
+	# "Ctrl+Alt+Delete".quit = _: { };
 	"Mod+Shift+P".power-off-monitors = _: { };
 	"Mod+Shift+W".spawn-sh = "noctalia-shell ipc call wallpaper random";
 	"Mod+Shift+N".spawn-sh = "noctalia-shell ipc call nightLight toggle";

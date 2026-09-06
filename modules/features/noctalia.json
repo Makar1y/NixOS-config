@@ -116,10 +116,10 @@
           {
             "clockColor": "none",
             "customFont": "",
-            "formatHorizontal": "HH:mm:ss ddd, MMM dd",
+            "formatHorizontal": "HH:mm:ss MM-dd",
             "formatVertical": "HH mm - dd MM",
             "id": "Clock",
-            "tooltipFormat": "HH:mm:ss ddd, MMM dd",
+            "tooltipFormat": "HH:mm:ss dddd, MMMM dd",
             "useCustomFont": false
           },
           {
@@ -656,7 +656,7 @@
     "colorSchemes": {
       "useWallpaperColors": true,
       "predefinedScheme": "Noctalia (default)",
-      "darkMode": true,
+      "darkMode": false,
       "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
