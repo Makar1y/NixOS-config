@@ -3,6 +3,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-nix run nixpkgs#noctalia-shell -- ipc call state all > ./modules/features/noctalia.json
+./noc-save.sh
 
 sudo nixos-rebuild switch --flake .#main
