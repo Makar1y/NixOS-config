@@ -243,12 +243,12 @@
       "lockScreenCountdownDuration": 10000,
       "autoStartAuth": false,
       "allowPasswordWithFprintd": false,
-      "clockStyle": "custom",
+      "clockStyle": "digital",
       "clockFormat": "yyyy-MM-dd MMMMMMMMMM dddddddddd hh:mm:ss",
       "passwordChars": true,
       "lockScreenMonitors": [],
-      "lockScreenBlur": 0.3,
-      "lockScreenTint": 0.3,
+      "lockScreenBlur": 0.5,
+      "lockScreenTint": 0.5,
       "keybinds": {
         "keyUp": [
           "Up"
@@ -637,8 +637,8 @@
       "monitors": []
     },
     "audio": {
-      "volumeStep": 5,
-      "volumeOverdrive": false,
+      "volumeStep": 3,
+      "volumeOverdrive": true,
       "spectrumFrameRate": 30,
       "visualizerType": "linear",
       "spectrumMirrored": true,
@@ -648,9 +648,9 @@
       "volumeFeedbackSoundFile": ""
     },
     "brightness": {
-      "brightnessStep": 5,
+      "brightnessStep": 3,
       "enforceMinimum": true,
-      "enableDdcSupport": false,
+      "enableDdcSupport": true,
       "backlightDeviceMappings": []
     },
     "colorSchemes": {
@@ -715,10 +715,10 @@
       "notifyUpdates": true
     },
     "idle": {
-      "enabled": false,
+      "enabled": true,
       "screenOffTimeout": 600,
       "lockTimeout": 660,
-      "suspendTimeout": 1800,
+      "suspendTimeout": 900,
       "fadeDuration": 5,
       "screenOffCommand": "",
       "lockCommand": "",
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/smeshariki4.png"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/1-synth-scape.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
