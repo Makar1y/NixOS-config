@@ -114,9 +114,9 @@
             "visualizerType": "linear"
           },
           {
-            "clockColor": "none",
+            "clockColor": "primary",
             "customFont": "",
-            "formatHorizontal": "HH:mm:ss MM-dd",
+            "formatHorizontal": "HH:mm:ss  MM-dd",
             "formatVertical": "HH mm - dd MM",
             "id": "Clock",
             "tooltipFormat": "HH:mm:ss dddd, MMMM dd",
@@ -656,7 +656,7 @@
     "colorSchemes": {
       "useWallpaperColors": true,
       "predefinedScheme": "Noctalia (default)",
-      "darkMode": false,
+      "darkMode": true,
       "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
