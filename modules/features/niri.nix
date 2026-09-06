@@ -53,19 +53,19 @@
 				"Mod+Shift+K".focus-monitor-up = _: { };
 				"Mod+Shift+L".focus-monitor-right = _: { };
 
-				"Mod+Shift+Ctrl+Left".move-column-to-monitor-left = _: { };
-				"Mod+Shift+Ctrl+Down".move-column-to-monitor-down = _: { };
-				"Mod+Shift+Ctrl+Up".move-column-to-monitor-up = _: { };
-				"Mod+Shift+Ctrl+Right".move-column-to-monitor-right = _: { };
-				"Mod+Shift+Ctrl+H".move-column-to-monitor-left = _: { };
-				"Mod+Shift+Ctrl+J".move-column-to-monitor-down = _: { };
-				"Mod+Shift+Ctrl+K".move-column-to-monitor-up = _: { };
-				"Mod+Shift+Ctrl+L".move-column-to-monitor-right = _: { };
+				"Mod+Shift+Shift+Left".move-column-to-monitor-left = _: { };
+				"Mod+Shift+Shift+Down".move-column-to-monitor-down = _: { };
+				"Mod+Shift+Shift+Up".move-column-to-monitor-up = _: { };
+				"Mod+Shift+Shift+Right".move-column-to-monitor-right = _: { };
+				# "Mod+Shift+Shift+H".move-column-to-monitor-left = _: { };
+				# "Mod+Shift+Shift+J".move-column-to-monitor-down = _: { };
+				# "Mod+Shift+Shift+K".move-column-to-monitor-up = _: { };
+				# "Mod+Shift+Shift+L".move-column-to-monitor-right = _: { };
 
 				"Mod+Page_Down".focus-workspace-down = _: { };
 				"Mod+Page_Up".focus-workspace-up = _: { };
-				"Mod+U".focus-workspace-down = _: { };
-				"Mod+I".focus-workspace-up = _: { };
+				"Mod+I".focus-workspace-down = _: { };
+				"Mod+U".focus-workspace-up = _: { };
 				"Mod+Ctrl+Page_Down".move-column-to-workspace-down = _: { };
 				"Mod+Ctrl+Page_Up".move-column-to-workspace-up = _: { };
 				"Mod+Ctrl+U".move-column-to-workspace-down = _: { };

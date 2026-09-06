@@ -8,16 +8,16 @@
       "density": "default",
       "showOutline": false,
       "showCapsule": true,
-      "capsuleOpacity": 0.25,
+      "capsuleOpacity": 1,
       "capsuleColorKey": "none",
-      "widgetSpacing": 8,
-      "contentPadding": 3,
+      "widgetSpacing": 6,
+      "contentPadding": 2,
       "fontScale": 1,
       "enableExclusionZoneInset": true,
-      "backgroundOpacity": 0.25,
+      "backgroundOpacity": 0.1,
       "useSeparateOpacity": true,
-      "marginVertical": 3,
-      "marginHorizontal": 3,
+      "marginVertical": 4,
+      "marginHorizontal": 4,
       "frameThickness": 8,
       "frameRadius": 12,
       "outerCorners": true,
@@ -29,28 +29,22 @@
       "widgets": {
         "left": [
           {
-            "colorizeSystemIcon": "none",
-            "colorizeSystemText": "none",
-            "customIconPath": "",
-            "enableColorization": false,
-            "icon": "rocket",
-            "iconColor": "none",
-            "id": "Launcher",
-            "useDistroLogo": false
+            "defaultSettings": {
+              "activeColor": "primary",
+              "camFilterRegex": "",
+              "enableToast": true,
+              "hideInactive": false,
+              "iconSpacing": 4,
+              "inactiveColor": "none",
+              "micFilterRegex": "",
+              "removeMargins": false
+            },
+            "id": "plugin:privacy-indicator"
           },
           {
-            "clockColor": "none",
-            "customFont": "",
-            "formatHorizontal": "HH:mm ddd, MMM dd",
-            "formatVertical": "HH mm - dd MM",
-            "id": "Clock",
-            "tooltipFormat": "HH:mm ddd, MMM dd",
-            "useCustomFont": false
-          },
-          {
-            "compactMode": true,
+            "compactMode": false,
             "diskPath": "/",
-            "iconColor": "none",
+            "iconColor": "primary",
             "id": "SystemMonitor",
             "showCpuCores": false,
             "showCpuFreq": false,
@@ -63,43 +57,14 @@
             "showLoadAverage": false,
             "showMemoryAsPercent": false,
             "showMemoryUsage": true,
-            "showNetworkStats": false,
+            "showNetworkStats": true,
             "showSwapUsage": false,
             "textColor": "none",
             "useMonospaceFont": true,
             "usePadding": false
           },
           {
-            "colorizeIcons": false,
-            "hideMode": "hidden",
-            "id": "ActiveWindow",
-            "maxWidth": 145,
-            "scrollingMode": "hover",
-            "showIcon": true,
-            "showText": true,
-            "textColor": "none",
-            "useFixedWidth": false
-          },
-          {
-            "compactMode": false,
-            "hideMode": "hidden",
-            "hideWhenIdle": false,
-            "id": "MediaMini",
-            "maxWidth": 145,
-            "panelShowAlbumArt": true,
-            "scrollingMode": "hover",
-            "showAlbumArt": true,
-            "showArtistFirst": true,
-            "showProgressRing": true,
-            "showVisualizer": false,
-            "textColor": "none",
-            "useFixedWidth": false,
-            "visualizerType": "linear"
-          }
-        ],
-        "center": [
-          {
-            "characterCount": 2,
+            "characterCount": 6,
             "colorizeIcons": false,
             "emptyColor": "secondary",
             "enableScrollWheel": true,
@@ -117,7 +82,51 @@
             "showApplicationsHover": false,
             "showBadge": true,
             "showLabelsOnlyWhenOccupied": true,
-            "unfocusedIconsOpacity": 1
+            "unfocusedIconsOpacity": 0.5
+          },
+          {
+            "colorizeIcons": false,
+            "hideMode": "hidden",
+            "id": "ActiveWindow",
+            "maxWidth": 200,
+            "scrollingMode": "hover",
+            "showIcon": true,
+            "showText": true,
+            "textColor": "none",
+            "useFixedWidth": false
+          }
+        ],
+        "center": [
+          {
+            "compactMode": false,
+            "hideMode": "hidden",
+            "hideWhenIdle": false,
+            "id": "MediaMini",
+            "maxWidth": 150,
+            "panelShowAlbumArt": true,
+            "scrollingMode": "hover",
+            "showAlbumArt": true,
+            "showArtistFirst": true,
+            "showProgressRing": true,
+            "showVisualizer": false,
+            "textColor": "none",
+            "useFixedWidth": false,
+            "visualizerType": "linear"
+          },
+          {
+            "clockColor": "none",
+            "customFont": "",
+            "formatHorizontal": "HH:mm:ss ddd, MMM dd",
+            "formatVertical": "HH mm - dd MM",
+            "id": "Clock",
+            "tooltipFormat": "HH:mm:ss ddd, MMM dd",
+            "useCustomFont": false
+          },
+          {
+            "colorName": "primary",
+            "hideWhenIdle": true,
+            "id": "AudioVisualizer",
+            "width": 150
           }
         ],
         "right": [
@@ -125,13 +134,13 @@
             "blacklist": [],
             "chevronColor": "none",
             "colorizeIcons": false,
-            "drawerEnabled": true,
+            "drawerEnabled": false,
             "hidePassive": false,
             "id": "Tray",
             "pinned": []
           },
           {
-            "hideWhenZero": false,
+            "hideWhenZero": true,
             "hideWhenZeroUnread": false,
             "iconColor": "none",
             "id": "NotificationHistory",
@@ -140,24 +149,30 @@
           },
           {
             "deviceNativePath": "__default__",
-            "displayMode": "graphic-clean",
+            "displayMode": "graphic",
             "hideIfIdle": false,
             "hideIfNotDetected": true,
             "id": "Battery",
-            "showNoctaliaPerformance": false,
-            "showPowerProfiles": false
+            "showNoctaliaPerformance": true,
+            "showPowerProfiles": true
           },
           {
-            "displayMode": "onhover",
-            "iconColor": "none",
+            "displayMode": "alwaysShow",
+            "iconColor": "primary",
+            "id": "Bluetooth",
+            "textColor": "none"
+          },
+          {
+            "displayMode": "alwaysShow",
+            "iconColor": "primary",
             "id": "Volume",
             "middleClickCommand": "pwvucontrol || pavucontrol",
             "textColor": "none"
           },
           {
             "applyToAllMonitors": false,
-            "displayMode": "onhover",
-            "iconColor": "none",
+            "displayMode": "alwaysShow",
+            "iconColor": "primary",
             "id": "Brightness",
             "textColor": "none"
           },
@@ -167,13 +182,13 @@
             "colorizeSystemText": "none",
             "customIconPath": "",
             "enableColorization": false,
-            "icon": "noctalia",
+            "icon": "alien",
             "id": "ControlCenter",
-            "useDistroLogo": false
+            "useDistroLogo": true
           }
         ]
       },
-      "mouseWheelAction": "none",
+      "mouseWheelAction": "volume",
       "reverseScroll": false,
       "mouseWheelWrap": true,
       "middleClickAction": "none",
@@ -263,20 +278,20 @@
       "settingsPanelSideBarCardStyle": false
     },
     "location": {
-      "name": "",
+      "name": "Vilnius",
       "weatherEnabled": true,
       "weatherShowEffects": true,
       "weatherTaliaMascotAlways": false,
       "useFahrenheit": false,
       "use12hourFormat": false,
-      "showWeekNumberInCalendar": false,
+      "showWeekNumberInCalendar": true,
       "showCalendarEvents": true,
       "showCalendarWeather": true,
       "analogClockInCalendar": false,
-      "firstDayOfWeek": -1,
+      "firstDayOfWeek": 1,
       "hideWeatherTimezone": false,
       "hideWeatherCityName": false,
-      "autoLocate": false
+      "autoLocate": true
     },
     "calendar": {
       "cards": [
@@ -310,8 +325,8 @@
       "solidColor": "#1a1a2e",
       "automationEnabled": true,
       "wallpaperChangeMode": "random",
-      "randomIntervalSec": 600,
-      "transitionDuration": 1500,
+      "randomIntervalSec": 1800,
+      "transitionDuration": 3000,
       "transitionType": [
         "fade",
         "disc",
@@ -365,8 +380,8 @@
       "enableSessionSearch": true,
       "ignoreMouseInput": false,
       "screenshotAnnotationTool": "",
-      "overviewLayer": false,
-      "density": "default"
+      "overviewLayer": true,
+      "density": "compact"
     },
     "controlCenter": {
       "position": "close_to_bar_button",
@@ -415,7 +430,7 @@
           "id": "audio-card"
         },
         {
-          "enabled": false,
+          "enabled": true,
           "id": "brightness-card"
         },
         {
@@ -447,8 +462,8 @@
       "batteryCriticalThreshold": 5,
       "enableDgpuMonitoring": false,
       "useCustomColors": false,
-      "warningColor": "",
-      "criticalColor": "",
+      "warningColor": "#abd0b1",
+      "criticalColor": "#ffb4ab",
       "externalMonitor": "resources || missioncenter || jdsystemmonitor || corestats || system-monitoring-center || gnome-system-monitor || plasma-systemmonitor || mate-system-monitor || ukui-system-monitor || deepin-system-monitor || pantheon-system-monitor"
     },
     "noctaliaPerformance": {
@@ -607,7 +622,7 @@
       "useWallpaperColors": true,
       "predefinedScheme": "Noctalia (default)",
       "darkMode": true,
-      "schedulingMode": "off",
+      "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
       "generationMethod": "tonal-spot",
@@ -693,7 +708,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/nix/store/08dd2i332il63cc8q1hn4zh2vvnh33vp-noctalia-shell-4.7.7/share/noctalia-shell/Assets/Wallpaper/noctalia.png"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/3327497.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -714,7 +729,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 0
+      "lastSeenTs": 1788689911000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
