@@ -1,7 +1,9 @@
 {
-	"Mod+Shift+Slash".spawn-sh = "noctalia-shell ipc call plugin togglePanek keybind-cheatsheet";
+	"Mod+Shift+Slash".spawn-sh = "qs -c noctalia-shell ipc call plugin togglePanek keybind-cheatsheet";
 
 	"Mod+Space".spawn-sh = "noctalia-shell ipc call launcher toggle";
+	"Mod+Tab".focus-column-right = _: { };
+	"Mod+Shift+Tab".focus-column-left = _: { };
 	"Mod+T".spawn = "alacritty";
 	"Mod+Return".spawn = "alacritty";
 	"Mod+B".spawn = "firefox";

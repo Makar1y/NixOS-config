@@ -4,6 +4,14 @@
 		imports = [ wlib.wrapperModules.niri ];
 		settings = {
 			prefer-no-csd = _: { };
+			workspaces = {
+				"1" = _: { };
+				"2" = _: { };
+				"3" = _: { };
+				"4" = _: { };
+				"5" = _: { };
+			};
+			input.focus-follows-mouse = _: { };
 			input.keyboard.xkb = {
 				layout = "us,lt,ru";
 				options = "grp:alt_shift_toggle";
@@ -13,6 +21,7 @@
 			};
 			layout = {
 				gaps = 10;
+				always-center-single-column = _: { };
 				focus-ring = {
 					width = 2;
 				};
@@ -25,7 +34,7 @@
 				}
 			];
 			cursor = {
-				"xcursor-size" = 16;
+				"xcursor-size" = 12;
 			};
 			gestures.hot-corners = { off = _: { }; }; 
 			hotkey-overlay = { skip-at-startup = _: { }; };

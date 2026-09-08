@@ -147,16 +147,17 @@ environment.systemPackages = with pkgs; [
          alacritty
          discord
          telegram-desktop
-         fuzzel
          spotify
          git
          zoxide
          bat
          lsd
-         fastfetch
+fastfetch
+         python3
          (nerd-fonts.symbols-only)
          (nerd-fonts.jetbrains-mono)
          self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
+         eduvpn-client
       ];
 
      # Symlink the Alacritty config into the user home
