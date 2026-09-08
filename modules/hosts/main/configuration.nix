@@ -74,6 +74,7 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+  programs.kdeconnect.enable = true;
 
   # Aliases for all shells
   environment.shellAliases = {
@@ -152,7 +153,7 @@ environment.systemPackages = with pkgs; [
          zoxide
          bat
          lsd
-fastfetch
+         fastfetch
          python3
          (nerd-fonts.symbols-only)
          (nerd-fonts.jetbrains-mono)

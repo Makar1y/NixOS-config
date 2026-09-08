@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero.jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero(1).jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -764,7 +764,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1788692534000
+      "lastSeenTs": 1788893629000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
