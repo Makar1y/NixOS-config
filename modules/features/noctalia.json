@@ -55,7 +55,7 @@
             "showDiskUsageAsPercent": false,
             "showGpuTemp": false,
             "showLoadAverage": false,
-            "showMemoryAsPercent": false,
+            "showMemoryAsPercent": true,
             "showMemoryUsage": true,
             "showNetworkStats": true,
             "showSwapUsage": false,
@@ -711,7 +711,7 @@
       "colorGeneration": ""
     },
     "plugins": {
-      "autoUpdate": false,
+      "autoUpdate": true,
       "notifyUpdates": true
     },
     "idle": {
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero(1).jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/1-synth-scape.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
