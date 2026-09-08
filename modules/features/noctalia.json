@@ -660,7 +660,7 @@
       "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
-      "generationMethod": "tonal-spot",
+      "generationMethod": "faithful",
       "monitorForColors": "",
       "syncGsettings": true
     },
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/1-synth-scape.jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/smeshariki.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {
