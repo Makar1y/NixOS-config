@@ -93,6 +93,7 @@
 	"Mod+7".focus-workspace = 7;
 	"Mod+8".focus-workspace = 8;
 	"Mod+9".focus-workspace = 9;
+	"Mod+0".focus-workspace = 10;
 	"Mod+Shift+1".move-column-to-workspace = 1;
 	"Mod+Shift+2".move-column-to-workspace = 2;
 	"Mod+Shift+3".move-column-to-workspace = 3;
@@ -102,6 +103,8 @@
 	"Mod+Shift+7".move-column-to-workspace = 7;
 	"Mod+Shift+8".move-column-to-workspace = 8;
 	"Mod+Shift+9".move-column-to-workspace = 9;
+	"Mod+Shift+10".move-column-to-workspace = 10;
+	
 
 	"Mod+BracketLeft".consume-or-expel-window-left = _: { };
 	"Mod+BracketRight".consume-or-expel-window-right = _: { };
