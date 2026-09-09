@@ -134,7 +134,7 @@
             "blacklist": [],
             "chevronColor": "none",
             "colorizeIcons": false,
-            "drawerEnabled": false,
+            "drawerEnabled": true,
             "hidePassive": false,
             "id": "Tray",
             "pinned": []
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/smeshariki.png"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/synthwave.jpeg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -764,7 +764,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1788959522000
+      "lastSeenTs": 1788980252000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"

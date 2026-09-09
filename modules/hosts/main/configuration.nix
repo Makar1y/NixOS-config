@@ -31,7 +31,8 @@
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.desktopManager.gnome.enable = true;
+  environment.gnome.excludePackages = [ pkgs.epiphany ];
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -74,6 +75,14 @@
 
   # Install firefox.
   programs.firefox.enable = true;
+
+  # Default web browser = Firefox
+  xdg.mime.defaultApplications = {
+    "text/html" = [ "firefox.desktop" ];
+    "application/xhtml+xml" = [ "firefox.desktop" ];
+    "x-scheme-handler/http" = [ "firefox.desktop" ];
+    "x-scheme-handler/https" = [ "firefox.desktop" ];
+  };
   programs.kdeconnect.enable = true;
 
   # Match cursor size set in niri (niri only controls the compositor cursor;
@@ -102,7 +111,7 @@
     enable = true;
     shellInit = ''
       set -U fish_greeting
-      fastfetch
+      fastfetch --logo none --structure title,os,uptime
     '';
     shellAliases = {
       ls = "lsd";
@@ -155,30 +164,63 @@
        nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 environment.systemPackages = with pkgs; [
-         firefox
-         vscode.fhs
-         neovim
-         opencode
-         androidStudioPackages.stable
-         alacritty
-         discord
-         telegram-desktop
-         spotify
-         git
-         zoxide
-         bat
-         lsd
-         fastfetch
-         python3
-         (nerd-fonts.symbols-only)
-         (nerd-fonts.jetbrains-mono)
-         self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
-         eduvpn-client
-      ];
+       # Browsers & messengers
+          firefox
+          discord
+          telegram-desktop
 
-     # Symlink the Alacritty config into the user home
+       # Editors & IDEs
+          vscode.fhs
+          neovim
+          opencode
+          antigravity-cli
+          androidStudioPackages.stable
+
+       # Office (en-US, ru, lt only)
+          (
+            libreoffice-qt.override {
+              unwrapped = libreoffice-qt-unwrapped.override {
+                langs = [ "en-GB" "ru" "lt" ];
+              };
+            }
+          )
+
+       # Terminals & shell tooling
+          alacritty
+          git
+          zoxide
+          bat
+          lsd
+          fastfetch
+
+       # Media
+          spotify
+
+       # Languages & toolchains
+          python3
+          gcc
+          clang
+          gdb
+          ghc
+          cabal-install
+          stack
+          haskell-language-server
+
+       # Fonts
+          (nerd-fonts.symbols-only)
+          (nerd-fonts.jetbrains-mono)
+
+       # Custom packages
+          self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
+          eduvpn-client
+       ];
+
+     # Symlink configs into the user home
      systemd.tmpfiles.rules = [
        "L+ /home/m1y/.config/alacritty/alacritty.toml - - - - ${./alacritty.toml}"
+       "d /home/m1y/.config/nvim 0700 m1y users -"
+       "L+ /home/m1y/.config/nvim/init.lua - - - - ${./nvim-init.lua}"
+       "L+ /home/m1y/.config/opencode/tui.json - - - - ${./opencode-tui.json}"
      ];
    };
 
