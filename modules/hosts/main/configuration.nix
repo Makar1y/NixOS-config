@@ -176,14 +176,8 @@ environment.systemPackages = with pkgs; [
           antigravity-cli
           androidStudioPackages.stable
 
-       # Office (en-US, ru, lt only)
-          (
-            libreoffice-qt.override {
-              unwrapped = libreoffice-qt-unwrapped.override {
-                langs = [ "en-GB" "ru" "lt" ];
-              };
-            }
-          )
+       # Office
+          libreoffice-qt
 
        # Terminals & shell tooling
           alacritty

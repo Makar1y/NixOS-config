@@ -134,7 +134,7 @@
             "blacklist": [],
             "chevronColor": "none",
             "colorizeIcons": false,
-            "drawerEnabled": true,
+            "drawerEnabled": false,
             "hidePassive": false,
             "id": "Tray",
             "pinned": []
@@ -656,7 +656,7 @@
     "colorSchemes": {
       "useWallpaperColors": true,
       "predefinedScheme": "Noctalia (default)",
-      "darkMode": true,
+      "darkMode": false,
       "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/synthwave.jpeg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/3327497.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -764,7 +764,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1788980252000
+      "lastSeenTs": 1788985806000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
