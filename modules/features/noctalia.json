@@ -134,7 +134,7 @@
             "blacklist": [],
             "chevronColor": "none",
             "colorizeIcons": false,
-            "drawerEnabled": false,
+            "drawerEnabled": true,
             "hidePassive": false,
             "id": "Tray",
             "pinned": []
@@ -660,7 +660,7 @@
       "schedulingMode": "location",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
-      "generationMethod": "faithful",
+      "generationMethod": "tonal-spot",
       "monitorForColors": "",
       "syncGsettings": true
     },
