@@ -3,6 +3,6 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-nix flake update
+./noc-save.sh
 
 sudo nixos-rebuild switch --flake .#main
