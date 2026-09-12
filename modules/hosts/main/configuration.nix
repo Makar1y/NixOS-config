@@ -196,6 +196,9 @@ environment.systemPackages = with pkgs; [
        # Media
           spotify
 
+       # Remote desktop
+          rustdesk
+
        # Languages & toolchains
           python3
           gcc
