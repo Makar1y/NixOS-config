@@ -151,6 +151,7 @@
 	"Mod+Shift+Escape" = _: { props.allow-inhibiting = false; content.toggle-keyboard-shortcuts-inhibit = _: { }; };
 	# "Mod+Shift+E".quit = _: { };
 	# "Ctrl+Alt+Delete".quit = _: { };
+	"Mod+Shift+T".spawn-sh = "alacritty -T Worklog -e worklog toggle";
 	"Mod+Shift+P".power-off-monitors = _: { };
 	"Mod+Shift+W".spawn-sh = "noctalia-shell ipc call wallpaper random";
 	"Mod+Shift+N".spawn-sh = "noctalia-shell ipc call nightLight toggle";

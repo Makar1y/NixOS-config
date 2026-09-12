@@ -210,6 +210,7 @@ environment.systemPackages = with pkgs; [
 
        # Custom packages
           self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
+          self.packages.${pkgs.stdenv.hostPlatform.system}.worklog
           eduvpn-client
        ];
 
