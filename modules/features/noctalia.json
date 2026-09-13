@@ -657,12 +657,12 @@
       "useWallpaperColors": true,
       "predefinedScheme": "Noctalia (default)",
       "darkMode": true,
-      "schedulingMode": "location",
+      "schedulingMode": "off",
       "manualSunrise": "06:30",
       "manualSunset": "18:30",
       "generationMethod": "tonal-spot",
       "monitorForColors": "",
-      "syncGsettings": false
+      "syncGsettings": true
     },
     "templates": {
       "activeTemplates": [
@@ -743,7 +743,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero(2).jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero.jpg"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -764,7 +764,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1789217038000
+      "lastSeenTs": 1789227186000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
