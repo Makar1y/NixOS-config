@@ -14,6 +14,7 @@
 	"Mod+S".spawn-sh = "noctalia-shell ipc call settings toggle";
 	"Mod+Escape".spawn-sh = "noctalia-shell ipc call sessionMenu toggle";
 	"Mod+O".toggle-overview = _: { repeat = false; };
+	"Mod+Shift+O".spawn-sh = "monitorctl select";
 	"Mod+Q".close-window = _: { repeat = false; };
 
 	"Mod+Left".focus-column-or-monitor-left = _: { };

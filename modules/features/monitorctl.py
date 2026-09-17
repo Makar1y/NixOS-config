@@ -206,7 +206,7 @@ def prompt_for(connector, outputs, state):
 
 def cmd_watch():
     state = load_state()
-    known = None
+    prev = None
     while True:
         try:
             outputs = niri_outputs()
@@ -214,15 +214,47 @@ def cmd_watch():
             time.sleep(2)
             continue
         present = {o["connector"] for o in outputs}
-        if known is None:
-            known = present
-        else:
-            new = present - known
-            for conn in sorted(new):
-                prompt_for(conn, outputs, state)
-                known.add(conn)
-        known = known - (known - present)
+        if prev is None:
+            prev = present
+            time.sleep(2)
+            continue
+        new = present - prev
+        for conn in sorted(new):
+            prompt_for(conn, {o["connector"]: o for o in outputs}, state)
+        prev = present
         time.sleep(2)
+
+
+def focused_connector():
+    try:
+        data = json.loads(
+            subprocess.run(
+                ["niri", "msg", "--json", "focused-output"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            ).stdout
+        )
+        return data.get("name")
+    except Exception:
+        return None
+
+
+def cmd_select(args):
+    state = load_state()
+    outputs = niri_outputs()
+    if not outputs:
+        print("no outputs connected")
+        return
+    if args:
+        conn = args[0]
+        if conn not in {o["connector"] for o in outputs}:
+            print(f"output {conn} not found")
+            sys.exit(1)
+        prompt_for(conn, {o["connector"]: o for o in outputs}, state)
+        return
+    conn = focused_connector() or outputs[0]["connector"]
+    prompt_for(conn, {o["connector"]: o for o in outputs}, state)
 
 
 def cmd_outputs():
@@ -235,6 +267,8 @@ def main():
     cmd = argv[0] if argv else "outputs"
     if cmd == "watch":
         cmd_watch()
+    elif cmd in ("select", "configure"):
+        cmd_select(argv[1:])
     elif cmd == "outputs":
         cmd_outputs()
     elif cmd == "apply":
@@ -253,9 +287,9 @@ def main():
                 scale = None
         apply(args[0], arrange, mode, scale, dry=dry)
     elif cmd in ("help", "--help", "-h"):
-        print("usage: monitorctl watch|outputs|apply <out> <arrange> [mode] [scale]")
+        print("usage: monitorctl watch|outputs|select [output]|apply <out> <arrange> [mode] [scale]")
     else:
-        print("usage: monitorctl watch|outputs|apply <out> <arrange> [mode] [scale]")
+        print("usage: monitorctl watch|outputs|select [output]|apply <out> <arrange> [mode] [scale]")
         sys.exit(1)
 
 
