@@ -195,7 +195,9 @@ environment.systemPackages = with pkgs; [
 
        # Custom packages
           self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
+          self.packages.${pkgs.stdenv.hostPlatform.system}.monitorctl
           self.packages.${pkgs.stdenv.hostPlatform.system}.worklog
+          yad
           eduvpn-client
        ];
 
