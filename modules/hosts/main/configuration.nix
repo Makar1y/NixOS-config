@@ -86,21 +86,6 @@
   };
   programs.kdeconnect.enable = true;
 
-  # Match cursor size set in niri (niri only controls the compositor cursor;
-  # GTK apps draw their own from these gsettings).
-  programs.dconf = {
-    enable = true;
-    profiles.user.databases = [
-      {
-        settings = {
-          "org/gnome/desktop/interface" = {
-            cursor-size = lib.gvariant.mkInt32 12;
-          };
-        };
-      }
-    ];
-  };
-
   # Aliases for all shells
   environment.shellAliases = {
     ls = "lsd";

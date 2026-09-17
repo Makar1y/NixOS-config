@@ -4,7 +4,9 @@
     "bar": {
       "barType": "floating",
       "position": "top",
-      "monitors": [],
+      "monitors": [
+        "eDP-1"
+      ],
       "density": "default",
       "showOutline": false,
       "showCapsule": true,
@@ -634,7 +636,9 @@
         2,
         3
       ],
-      "monitors": []
+      "monitors": [
+        "eDP-1"
+      ]
     },
     "audio": {
       "volumeStep": 3,
@@ -743,7 +747,7 @@
     "openedPanel": "",
     "lockScreenActive": false,
     "wallpapers": {
-      "eDP-1": "/home/m1y/Pictures/Wallpapers/Generation zero.jpg"
+      "eDP-1": "/home/m1y/Pictures/Wallpapers/hypr.png"
     },
     "desktopWidgetsEditMode": false,
     "display": {
@@ -764,7 +768,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1789227186000
+      "lastSeenTs": 1789418508000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
