@@ -180,6 +180,9 @@ environment.systemPackages = with pkgs; [
        # Remote desktop
           rustdesk
 
+       # Containers
+          docker-compose
+
        # Languages & toolchains
           python3
           gcc
@@ -189,6 +192,7 @@ environment.systemPackages = with pkgs; [
           cabal-install
           stack
           haskell-language-server
+          dotnet-sdk
 
        # Fonts
           (nerd-fonts.symbols-only)
