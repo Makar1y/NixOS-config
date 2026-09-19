@@ -20,6 +20,7 @@
   # Enable networking
   networking.networkmanager.enable = true;
   services.tailscale.enable = true;
+  virtualisation.docker.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Vilnius";
@@ -68,7 +69,7 @@
     isNormalUser = true;
     description = "Makariy";
     shell = pkgs.fish;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     #  thunderbird
     ];

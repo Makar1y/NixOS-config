@@ -597,7 +597,9 @@
       "enabled": true,
       "enableMarkdown": false,
       "density": "default",
-      "monitors": [],
+      "monitors": [
+        "eDP-1"
+      ],
       "location": "top",
       "overlayLayer": true,
       "backgroundOpacity": 0.5,
@@ -751,24 +753,39 @@
     },
     "desktopWidgetsEditMode": false,
     "display": {
-      "eDP-1": {
-        "name": "eDP-1",
+      "HDMI-A-1": {
         "connected": true,
+        "height": 1080,
+        "name": "HDMI-A-1",
+        "physical_height": 300,
+        "physical_width": 530,
+        "refresh_rate": 60000,
         "scale": 1,
-        "width": 1920,
-        "height": 1200,
-        "x": 0,
-        "y": 0,
-        "physical_width": 340,
-        "physical_height": 220,
-        "refresh_rate": 60002,
-        "vrr_supported": true,
+        "transform": "Normal",
         "vrr_enabled": false,
-        "transform": "Normal"
+        "vrr_supported": false,
+        "width": 1920,
+        "x": 0,
+        "y": 0
+      },
+      "eDP-1": {
+        "connected": true,
+        "height": 1200,
+        "name": "eDP-1",
+        "physical_height": 220,
+        "physical_width": 340,
+        "refresh_rate": 60002,
+        "scale": 1,
+        "transform": "Normal",
+        "vrr_enabled": false,
+        "vrr_supported": true,
+        "width": 1920,
+        "x": 1920,
+        "y": 0
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1789418508000
+      "lastSeenTs": 1789760969000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
