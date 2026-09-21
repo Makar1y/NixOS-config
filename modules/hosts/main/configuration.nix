@@ -162,6 +162,7 @@ environment.systemPackages = with pkgs; [
           opencode
           antigravity-cli
           androidStudioPackages.stable
+          github-copilot-cli
 
        # Office
           libreoffice-qt
@@ -169,6 +170,7 @@ environment.systemPackages = with pkgs; [
        # Terminals & shell tooling
           alacritty
           git
+          gh
           zoxide
           bat
           lsd
@@ -185,6 +187,7 @@ environment.systemPackages = with pkgs; [
 
        # Languages & toolchains
           python3
+          uv
           gcc
           clang
           gdb
@@ -200,9 +203,7 @@ environment.systemPackages = with pkgs; [
 
        # Custom packages
           self.packages.${pkgs.stdenv.hostPlatform.system}.noctalia-shell
-          self.packages.${pkgs.stdenv.hostPlatform.system}.monitorctl
           self.packages.${pkgs.stdenv.hostPlatform.system}.worklog
-          yad
           eduvpn-client
        ];
 

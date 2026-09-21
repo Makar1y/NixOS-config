@@ -44,7 +44,6 @@
 			hotkey-overlay = { skip-at-startup = _: { }; };
 			spawn-at-startup = [
 				"noctalia-shell"
-				"monitorctl watch"
 			];
 			binds = import ./_binds.nix;
 		};
