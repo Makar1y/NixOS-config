@@ -80,8 +80,8 @@
             "labelMode": "index",
             "occupiedColor": "secondary",
             "pillSize": 0.6,
-            "showApplications": false,
-            "showApplicationsHover": false,
+            "showApplications": true,
+            "showApplicationsHover": true,
             "showBadge": true,
             "showLabelsOnlyWhenOccupied": true,
             "unfocusedIconsOpacity": 0.5
@@ -93,7 +93,7 @@
             "maxWidth": 200,
             "scrollingMode": "hover",
             "showIcon": true,
-            "showText": true,
+            "showText": false,
             "textColor": "none",
             "useFixedWidth": false
           }
@@ -770,7 +770,7 @@
       }
     },
     "notificationsState": {
-      "lastSeenTs": 1789843324000
+      "lastSeenTs": 1790171898000
     },
     "changelogState": {
       "lastSeenVersion": "v4.7.7"
