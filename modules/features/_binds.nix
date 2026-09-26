@@ -45,7 +45,6 @@
 	"Mod+Ctrl+Right".focus-monitor-right = _: { };
 	"Mod+Ctrl+H".focus-monitor-left = _: { };
 	"Mod+Ctrl+J".focus-monitor-down = _: { };
-	"Mod+Ctrl+K".focus-monitor-up = _: { };
 	"Mod+Ctrl+L".focus-monitor-right = _: { };
 
 	"Mod+Ctrl+Shift+Left".move-column-to-monitor-left = _: { };
@@ -152,6 +151,9 @@
 	# "Mod+Shift+E".quit = _: { };
 	# "Ctrl+Alt+Delete".quit = _: { };
 	"Mod+Shift+T".spawn-sh = "alacritty -T Worklog -e worklog toggle";
+	"Mod+Ctrl+W".spawn-sh = "alacritty --option window.opacity=1 -T Network -e nmtui";
+	"Mod+Ctrl+B".spawn-sh = "alacritty --option window.opacity=1 -T Bluetooth -e bluetuith";
+	"Mod+Ctrl+K".spawn-sh = "alacritty --option window.opacity=1 -T btop -e btop";
 	"Mod+Shift+P".power-off-monitors = _: { };
 	"Mod+Shift+W".spawn-sh = "noctalia-shell ipc call wallpaper random";
 	"Mod+Shift+N".spawn-sh = "noctalia-shell ipc call nightLight toggle";

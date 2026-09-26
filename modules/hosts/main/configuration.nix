@@ -32,7 +32,7 @@
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
+  services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;
   environment.gnome.excludePackages = [ pkgs.epiphany ];
 
@@ -167,14 +167,18 @@ environment.systemPackages = with pkgs; [
        # Office
           libreoffice-qt
 
-       # Terminals & shell tooling
-          alacritty
-          git
-          gh
-          zoxide
-          bat
-          lsd
-          fastfetch
+# Terminals & shell tooling
+           alacritty
+           git
+           gh
+           zoxide
+           bat
+           lsd
+           fastfetch
+
+       # System monitors
+           btop
+           bluetuith
 
        # Media
           spotify
@@ -195,7 +199,6 @@ environment.systemPackages = with pkgs; [
           cabal-install
           stack
           haskell-language-server
-          dotnet-sdk
 
        # Fonts
           (nerd-fonts.symbols-only)
@@ -210,6 +213,7 @@ environment.systemPackages = with pkgs; [
      # Symlink configs into the user home
      systemd.tmpfiles.rules = [
        "L+ /home/m1y/.config/alacritty/alacritty.toml - - - - ${./alacritty.toml}"
+       "L+ /home/m1y/.config/btop/btop.conf - - - - ${./btop.conf}"
        "d /home/m1y/.config/nvim 0700 m1y users -"
        "L+ /home/m1y/.config/nvim/init.lua - - - - ${./nvim-init.lua}"
        "L+ /home/m1y/.config/opencode/tui.json - - - - ${./opencode-tui.json}"
