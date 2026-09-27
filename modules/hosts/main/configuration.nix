@@ -167,7 +167,7 @@ environment.systemPackages = with pkgs; [
        # Office
           libreoffice-qt
 
-# Terminals & shell tooling
+          # Terminals & shell tooling
            alacritty
            git
            gh
@@ -199,6 +199,7 @@ environment.systemPackages = with pkgs; [
           cabal-install
           stack
           haskell-language-server
+          dotnet-sdk
 
        # Fonts
           (nerd-fonts.symbols-only)
