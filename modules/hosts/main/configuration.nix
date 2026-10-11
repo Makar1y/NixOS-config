@@ -120,6 +120,7 @@ imports = [
   programs.NiriDM = {
     enable = true;
     autoHotplug = true;
+    popupProvider = [ "fuzzel" ];
   };
 
   # List packages installed in system profile. To search, run:
@@ -190,6 +191,7 @@ environment.systemPackages = with pkgs; [
 
        # Display mirroring & management
        wl-mirror
+       fuzzel
 
        # Media
           spotify

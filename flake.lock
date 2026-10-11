@@ -38,14 +38,17 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791726232,
-        "narHash": "sha256-jZ/MlmJP9AiuxlthTjTqz2/lNwJ+PzJQc+FngLNRMA8=",
-        "path": "/home/m1y/Projects/NDM",
-        "type": "path"
+        "lastModified": 1791727244,
+        "narHash": "sha256-M1G3+skflk+LfCqnVQR3xhb9sI/nL/y/51eu+bsIzvk=",
+        "owner": "Makar1y",
+        "repo": "NiriDM",
+        "rev": "0820ff2f1f777093f33899481198944359b34aec",
+        "type": "github"
       },
       "original": {
-        "path": "/home/m1y/Projects/NDM",
-        "type": "path"
+        "owner": "Makar1y",
+        "repo": "NiriDM",
+        "type": "github"
       }
     },
     "nixpkgs": {

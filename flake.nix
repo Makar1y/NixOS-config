@@ -10,7 +10,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    niridm.url = "path:/home/m1y/Projects/NDM";
+    niridm.url = "github:Makar1y/NiriDM";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);
