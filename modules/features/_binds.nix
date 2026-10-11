@@ -150,7 +150,7 @@
 	"Mod+Shift+Escape" = _: { props.allow-inhibiting = false; content.toggle-keyboard-shortcuts-inhibit = _: { }; };
 	# "Mod+Shift+E".quit = _: { };
 	# "Ctrl+Alt+Delete".quit = _: { };
-	"Mod+Shift+T".spawn-sh = "alacritty -T Worklog -e worklog toggle";
+	"Mod+Shift+T".spawn-sh = "alacritty -T Worklog -e worklog sync";
 	"Mod+Ctrl+W".spawn-sh = "alacritty -T Network -e nmtui";
 	"Mod+Ctrl+B".spawn-sh = "alacritty -T Bluetooth -e bluetuith";
 	"Mod+Ctrl+K".spawn-sh = "alacritty -T btop -e btop";

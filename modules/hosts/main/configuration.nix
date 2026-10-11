@@ -4,6 +4,7 @@
       imports = [
          self.nixosModules.mainHardware
 	self.nixosModules.niri
+	self.nixosModules.worklog
       ];
 
   # Bootloader.
@@ -183,8 +184,6 @@ environment.systemPackages = with pkgs; [
        # Media
           spotify
 
-       # Remote desktop
-          rustdesk
 
        # Containers
           docker-compose
@@ -218,6 +217,7 @@ environment.systemPackages = with pkgs; [
        "d /home/m1y/.config/nvim 0700 m1y users -"
        "L+ /home/m1y/.config/nvim/init.lua - - - - ${./nvim-init.lua}"
        "L+ /home/m1y/.config/opencode/tui.json - - - - ${./opencode-tui.json}"
+       "d /home/m1y/.config/worklog 0700 m1y users -"
      ];
    };
 

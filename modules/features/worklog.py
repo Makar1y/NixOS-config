@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
+import glob
 import json
 import os
-import re
-import shutil
+import shlex
 import signal
 import subprocess
 import sys
 import time
-from datetime import datetime
+import urllib.error
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
 
 CATEGORIES = [
     "Coding",
@@ -37,7 +40,6 @@ FALLBACK_MAP = [
     ("opencode", "Coding"),
     ("spotify", "Media/Music"),
     ("youtube", "Media/Music"),
-    ("ytmdesktop", "Media/Music"),
     ("nautilus", "System"),
     ("gnome", "System"),
     ("niri", "System"),
@@ -45,49 +47,371 @@ FALLBACK_MAP = [
     ("alacritty", "Terminal"),
 ]
 
-DEFAULTS = {
-    "dir": os.path.expanduser("~/Documents/Worklogs"),
-    "ai": True,
-}
+PSP_TAGS = [
+    "Paskaita/pratybos",
+    "Skaitymas",
+    "Planavimas",
+    "Projektavimas",
+    "Programavimas (kodavimas)",
+    "Peržiūra",
+    "Kompiliavimas",
+    "Testavimas",
+    "Atsiskaitymas",
+    "PSP veikla",
+]
+
+BASE_DIR = Path(os.environ.get("WORKLOG_DIR", os.path.expanduser("~/Documents/Worklogs")))
+ENV_FILE = Path(os.environ.get("WORKLOG_ENV", os.path.expanduser("~/.config/worklog/env")))
+ACTIVITY = BASE_DIR / "activity.jsonl"
+STATE = BASE_DIR / "state.json"
+CURSOR = BASE_DIR / "cursor.json"
+HISTORY_DIR = BASE_DIR / "history"
+CLOCKIFY_BASE = "https://api.clockify.me/api/v1"
+CLOCKIFY_WORKSPACE = os.environ.get("CLOCKIFY_WORKSPACE_ID", "69245cb76e6c848d15de4bcb")
+
+MIN_DURATION = int(os.environ.get("WORKLOG_MIN_DURATION", "60"))
+POLL_INTERVAL = float(os.environ.get("WORKLOG_INTERVAL", "1"))
 
 
-def default_dir():
-    return DEFAULTS["dir"]
+def load_env():
+    env = {}
+    if ENV_FILE.exists():
+        for line in ENV_FILE.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            env[key.strip()] = value.strip().strip("\"'")
+    return env
 
 
-def interactive():
-    return sys.stdin.isatty()
+def iso_z(ts):
+    return datetime.fromtimestamp(ts, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def prompt(label, default):
-    if not interactive():
-        return default
+def iso_from_z(s):
+    return datetime.strptime(s, "%Y-%m-%dT%H:%M:%SZ").timestamp()
+
+
+def find_niri_socket():
+    runtime = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    candidates = sorted(glob.glob(os.path.join(runtime, "niri*.sock")))
+    return candidates[-1] if candidates else None
+
+
+def current_focus():
+    env = os.environ.copy()
+    cmd = ["niri", "msg", "--json", "focused-window"]
+    for attempt in range(2):
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=3, env=env
+            )
+            out = result.stdout.strip()
+            data = json.loads(out) if out and out != "null" else None
+            if data is None:
+                return None
+            return {
+                "app": data.get("app_id"),
+                "title": data.get("title"),
+                "ws": data.get("workspace_id"),
+                "ts": time.time(),
+            }
+        except Exception:
+            if attempt == 0:
+                sock = find_niri_socket()
+                if sock:
+                    env["NIRI_SOCKET"] = sock
+                    continue
+            return None
+    return None
+
+
+def write_activity(block, end_ts):
+    duration = end_ts - block["start"]
+    if duration < MIN_DURATION:
+        return
+    BASE_DIR.mkdir(parents=True, exist_ok=True)
+    with open(ACTIVITY, "a") as f:
+        f.write(
+            json.dumps(
+                {
+                    "start_time": iso_z(block["start"]),
+                    "end_time": iso_z(end_ts),
+                    "duration": round(duration, 1),
+                    "app": block.get("app"),
+                    "title": block.get("title"),
+                    "workspace": block.get("ws"),
+                }
+            )
+            + "\n"
+        )
+
+
+def load_state():
     try:
-        raw = input(f"{label} [{default}]: ").strip()
-    except EOFError:
-        return default
-    return raw if raw else default
+        return json.loads(STATE.read_text())
+    except (FileNotFoundError, json.JSONDecodeError):
+        return None
 
 
-def prompt_yes(label, default):
-    if not interactive():
-        return default
-    suffix = "Y/n" if default else "y/N"
+def save_state(block):
+    if block is None:
+        try:
+            STATE.unlink()
+        except FileNotFoundError:
+            pass
+        return
+    STATE.write_text(json.dumps(block))
+
+
+def cmd_track():
+    def term(signum=None, frame=None):
+        raise SystemExit(0)
+
+    signal.signal(signal.SIGTERM, term)
+    signal.signal(signal.SIGINT, term)
+
+    block = load_state()
     try:
-        raw = input(f"{label} [{suffix}]: ").strip().lower()
-    except EOFError:
-        return default
-    if not raw:
-        return default
-    return raw in ("y", "yes")
+        while True:
+            focus = current_focus()
+            if block and (focus is None or focus["app"] != block.get("app") or focus["title"] != block.get("title")):
+                write_activity(block, time.time())
+                save_state(None)
+                block = None
+            if focus and block is None:
+                block = {
+                    "app": focus["app"],
+                    "title": focus["title"],
+                    "ws": focus["ws"],
+                    "start": focus["ts"],
+                }
+                save_state(block)
+            time.sleep(POLL_INTERVAL)
+    except SystemExit:
+        if block:
+            write_activity(block, time.time())
+            save_state(None)
 
 
-def data_dir():
-    return os.environ.get("WORKLOG_DIR", default_dir())
+def read_pending():
+    if not ACTIVITY.exists() or os.stat(ACTIVITY).st_size == 0:
+        return [], 0
+    lines = ACTIVITY.read_text().splitlines()
+    cursor = 0
+    try:
+        cursor = int(CURSOR.read_text().strip())
+    except (FileNotFoundError, ValueError):
+        cursor = 0
+    cursor = min(cursor, len(lines))
+    return lines[cursor:], cursor
 
 
-def active_path():
-    return os.path.join(data_dir(), "active.json")
+def aggregate(blocks):
+    result = {}
+    for b in blocks:
+        key = (b.get("app"), b.get("title"))
+        if key not in result:
+            result[key] = {
+                "app": b.get("app"),
+                "title": b.get("title"),
+                "duration": 0.0,
+                "start": b["start_time"],
+                "end": b["end_time"],
+            }
+        r = result[key]
+        r["duration"] += b["duration"]
+        if b["start_time"] < r["start"]:
+            r["start"] = b["start_time"]
+        if b["end_time"] > r["end"]:
+            r["end"] = b["end_time"]
+    return sorted(result.values(), key=lambda x: x["start"])
+
+
+def clockify_headers(env):
+    return {
+        "X-Api-Key": env["CLOCKIFY_API_KEY"],
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+
+def clockify_get(env, path):
+    req = urllib.request.Request(
+        CLOCKIFY_BASE + path, headers=clockify_headers(env)
+    )
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.loads(r.read().decode() or "[]")
+
+
+def clockify_post(env, path, body):
+    req = urllib.request.Request(
+        CLOCKIFY_BASE + path,
+        data=json.dumps(body).encode(),
+        headers=clockify_headers(env),
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = r.read().decode() or "{}"
+            return r.status, json.loads(data)
+    except urllib.error.HTTPError as e:
+        return e.code, {"detail": e.read().decode()}
+
+
+def fetch_context(env):
+    wid = CLOCKIFY_WORKSPACE
+    projects = clockify_get(env, f"/workspaces/{wid}/projects")
+    tags = clockify_get(env, f"/workspaces/{wid}/tags")
+    active_projects = {
+        p["name"]: p["id"] for p in projects if not p.get("archived")
+    }
+    tags_by_name = {t["name"]: t["id"] for t in tags}
+    return wid, active_projects, tags_by_name
+
+
+def ensure_project(env, wid, name, projects_by_name):
+    if name in projects_by_name:
+        return projects_by_name[name]
+    status, data = clockify_post(env, f"/workspaces/{wid}/projects", {"name": name})
+    if status in (200, 201) and data.get("id"):
+        projects_by_name[name] = data["id"]
+        return data["id"]
+    return None
+
+
+def ensure_tag(env, wid, name, tags_by_name):
+    if name in tags_by_name:
+        return tags_by_name[name]
+    status, data = clockify_post(env, f"/workspaces/{wid}/tags", {"name": name, "archived": False})
+    if status in (200, 201) and data.get("id"):
+        tags_by_name[name] = data["id"]
+        return data["id"]
+    return None
+
+
+def ai_categorize(activities, projects_by_name, tags_by_name):
+    exe = os.environ.get("WORKLOG_AI_CMD")
+    if not exe and shutil_which("opencode"):
+        exe = "opencode"
+    if not exe:
+        return None, "opencode not found"
+    prompt = (
+        "You are a time-tracking assistant. I provide computer activity logs. "
+        "Map each activity to a Clockify project name and tags.\n\n"
+        "CLOCKIFY CONTEXT:\n"
+        f"PROJECTS: {json.dumps(sorted(projects_by_name))}\n"
+        f"TAGS: {json.dumps(sorted(tags_by_name))}\n\n"
+        "RULES:\n"
+        "1. Return ONLY a raw JSON array. No conversational text, no code fences.\n"
+        "2. Each item uses EXACTLY this schema: "
+        '{"project": "<project name>", "description": "<cleaned summary>", '
+        '"start": "ISO", "end": "ISO", "tags": ["<tag name>", ...]}.\n'
+        "3. Prefer existing non-archived projects and tags from the context above. "
+        "You may output new project/tag names that do not exist yet; they will be created.\n"
+        "4. Group narrow window titles into broad categories ('Coding', 'Browsing', "
+        "'Meetings', 'Social Media', 'Communication', 'Media/Music', 'System' or an existing project). "
+        "Avoid names too specific to a single window title.\n"
+        "5. If you choose a project whose name contains '#psp', attach EXACTLY ONE tag chosen from: "
+        + ", ".join(repr(t) for t in PSP_TAGS) + ".\n"
+        "6. Otherwise there can be multiple tags.\n"
+        "7. Merge consecutive entries sharing the same theme by taking the first start and the last end.\n"
+        "8. Keep 'start' and 'end' in yyyy-MM-ddTHH:mm:ssZ format. Never invent timestamps outside the input range.\n"
+        "9. The sum of all durations must equal the total measured time.\n\n"
+        "ACTIVITY:\n" + json.dumps(activities) + "\n\n"
+        "OUTPUT (JSON array only):\n"
+    )
+    if os.environ.get("WORKLOG_AI_CMD"):
+        cmd = shlex.split(os.environ["WORKLOG_AI_CMD"]) + [prompt]
+    else:
+        cmd = [exe, "run", prompt]
+    try:
+        out = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=180, env=os.environ.copy()
+        )
+        text = out.stdout if out.returncode == 0 else out.stderr
+    except Exception as exc:
+        return None, f"AI failed: {exc}"
+    if not text.strip():
+        return None, "AI returned no output"
+    text = text.replace("```json", "").replace("```", "").strip()
+    try:
+        parsed = json.loads(text[text.find("[") : text.rfind("]") + 1])
+    except Exception:
+        return None, "AI returned no parseable JSON"
+    if not isinstance(parsed, list):
+        return None, "AI returned non-array JSON"
+    total_measured = sum(a["duration"] for a in activities)
+    total_mapped = 0
+    for e in parsed:
+        try:
+            total_mapped += iso_from_z(e["end"]) - iso_from_z(e["start"])
+        except Exception:
+            pass
+    if total_mapped and abs(total_mapped - total_measured) > max(total_measured * 0.05, 60):
+        print(f"warning: mapped {total_mapped:.0f}s vs measured {total_measured:.0f}s")
+    return parsed, ""
+
+
+def shutil_which(name):
+    for path in os.environ.get("PATH", "").split(os.pathsep):
+        if not path:
+            continue
+        candidate = os.path.join(path, name)
+        if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+            return candidate
+    return None
+
+
+def heuristic_map(entry):
+    text = " ".join(str(x or "") for x in (entry.get("app"), entry.get("title"))).lower()
+    for key, cat in FALLBACK_MAP:
+        if key in text:
+            return cat
+    return "Other"
+
+
+def push_entries(env, wid, entries, projects_by_name, tags_by_name):
+    ok_ids = []
+    entries = sorted(entries, key=lambda e: e.get("start", ""))
+    for e in entries:
+        try:
+            start = iso_from_z(e["start"])
+            end = iso_from_z(e["end"])
+        except (KeyError, ValueError):
+            print(f"skip: bad timestamps {e!r}")
+            continue
+        duration = end - start
+        if duration < MIN_DURATION:
+            continue
+        project = e.get("project") or "Other"
+        pid = ensure_project(env, wid, project, projects_by_name)
+        if not pid:
+            print(f"skip: could not resolve project {project!r}")
+            continue
+        tids = []
+        for t in e.get("tags", []) or []:
+            tid = ensure_tag(env, wid, t, tags_by_name)
+            if tid:
+                tids.append(tid)
+        if "#psp" in project and tids:
+            tids = tids[:1]
+        body = {
+            "description": (e.get("description") or "")[:3000],
+            "start": iso_z(start),
+            "end": iso_z(end),
+            "projectId": pid,
+            "tagIds": tids,
+            "billable": False,
+        }
+        status, data = clockify_post(env, f"/workspaces/{wid}/time-entries", body)
+        if status == 201:
+            ok_ids.append(data.get("id") or "")
+            print(f"ok: {body.get('description')!r} ({fmt_dur(duration)})")
+        else:
+            print(f"fail: {body.get('description')!r} -> {status} {data}")
+    return len(ok_ids)
 
 
 def fmt_dur(seconds):
@@ -97,473 +421,89 @@ def fmt_dur(seconds):
     return f"{h}:{m:02d}:{s:02d}"
 
 
-def iso(ts):
-    return datetime.fromtimestamp(ts).astimezone().isoformat()
+def cmd_sync():
+    env = load_env()
+    if not env.get("CLOCKIFY_API_KEY"):
+        print("CLOCKIFY_API_KEY missing in " + str(ENV_FILE))
+        return 2
 
+    pending, cursor = read_pending()
+    if not pending:
+        print("Nothing to sync.")
+        return 0
 
-def read_active():
-    try:
-        with open(active_path()) as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return None
-
-
-def write_active(info):
-    os.makedirs(data_dir(), exist_ok=True)
-    with open(active_path(), "w") as f:
-        json.dump(info, f)
-
-
-def cmd_start(project, base_dir, ai_enabled):
-    if read_active():
-        return "A session is already active (worklog status)."
-    if interactive() and not project:
-        project = prompt("Project name", "")
-    project = project.strip() or "default"
-    if interactive():
-        base_dir = prompt("Save directory", base_dir)
-    base_dir = os.path.abspath(os.path.expanduser(base_dir or "~"))
-    if interactive():
-        ai_enabled = prompt_yes("Use AI summary", ai_enabled)
-    slug = re.sub(r"[^a-zA-Z0-9._-]+", "-", project).strip("-") or "default"
-    name = time.strftime("%Y-%m-%d_%H%M%S") + "_" + slug
-    session_dir = os.path.join(base_dir, "sessions", name)
-    os.makedirs(session_dir, exist_ok=True)
-    raw_path = os.path.join(session_dir, "raw.jsonl")
-    log_path = os.path.join(session_dir, "poller.log")
-    proc = subprocess.Popen(
-        [sys.executable, os.path.abspath(__file__), "__poll", raw_path],
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=open(log_path, "a"),
-        start_new_session=True,
-    )
-    write_active(
-        {
-            "project": project,
-            "start": time.time(),
-            "base_dir": base_dir,
-            "session_dir": session_dir,
-            "raw": raw_path,
-            "pid": proc.pid,
-            "ai": ai_enabled,
-        }
-    )
-    return f"Recording started: {project}\nSave dir: {base_dir}\nAI: {'yes' if ai_enabled else 'no'}\nRaw log: {raw_path}"
-
-
-def heuristic_category(app, title):
-    text = " ".join(str(x or "") for x in (app, title)).lower()
-    for key, cat in FALLBACK_MAP:
-        if key in text:
-            return cat
-    return "Other"
-
-
-def poll_loop(raw_path):
-    def term(signum=None, frame=None):
-        sys.exit(0)
+    blocks = [json.loads(line) for line in pending if line.strip()]
+    activities = aggregate(blocks)
 
     try:
-        signal.signal(signal.SIGTERM, term)
-        signal.signal(signal.SIGINT, term)
-    except ImportError:
-        pass
+        wid, projects_by_name, tags_by_name = fetch_context(env)
+    except Exception as exc:
+        print(f"clockify context failed: {exc}")
+        return 2
 
-    last = None
-    while True:
-        try:
-            out = subprocess.run(
-                ["niri", "msg", "--json", "focused-window"],
-                capture_output=True,
-                text=True,
-                timeout=3,
-            ).stdout.strip()
-            data = json.loads(out) if out and out != "null" else None
-            if data is not None:
-                key = (data.get("app_id"), data.get("title"), data.get("workspace_id"))
-            else:
-                key = None
-        except Exception:
-            key = None
-        now = time.time()
-        if key != last:
-            entry = {
-                "ts": now,
-                "app": data.get("app_id") if data else None,
-                "title": data.get("title") if data else None,
-                "ws": data.get("workspace_id") if data else None,
-            }
-            with open(raw_path, "a") as f:
-                f.write(json.dumps(entry) + "\n")
-            last = key
-        time.sleep(1.0)
-
-
-def analyze(raw_path, project, start_ts, stop_ts, ai_enabled):
-    intervals = []
-    with open(raw_path) as f:
-        entries = [json.loads(line) for line in f if line.strip()]
-    for i, e in enumerate(entries):
-        end = entries[i + 1]["ts"] if i + 1 < len(entries) else stop_ts
-        intervals.append(
-            {
-                "start": e["ts"],
-                "end": end,
-                "seconds": max(0, end - e["ts"]),
-                "app": e.get("app"),
-                "title": e.get("title"),
-            }
-        )
-    if not intervals:
-        intervals.append(
-            {
-                "start": start_ts,
-                "end": stop_ts,
-                "seconds": max(0, stop_ts - start_ts),
-                "app": None,
-                "title": None,
-            }
-        )
-    total = sum(i["seconds"] for i in intervals)
-
-    categorized = None
-    ai_note = ""
-    if ai_enabled:
-        categorized, ai_note = ai_categorize(intervals, total)
-    if categorized is None:
-        categorized = []
-        for i in intervals:
-            cat = heuristic_category(i["app"], i["title"])
-            categorized.append(
+    mapped, note = ai_categorize(activities, projects_by_name, tags_by_name)
+    if mapped is None:
+        print(note or "AI unavailable, using local heuristics")
+        mapped = []
+        for a in activities:
+            cat = heuristic_map(a)
+            mapped.append(
                 {
-                    "start": iso(i["start"]),
-                    "end": iso(i["end"]),
-                    "seconds": round(i["seconds"], 1),
-                    "app": i["app"],
-                    "title": i["title"],
-                    "description": (i["title"] or "").strip(),
-                    "category": cat,
+                    "project": cat,
+                    "description": (a.get("title") or "").strip(),
+                    "start": a["start"],
+                    "end": a["end"],
                     "tags": [],
                 }
             )
-        if not ai_enabled:
-            ai_note = ""
-        else:
-            ai_note = ai_note or "AI categorizer unavailable; used local heuristics."
-    return categorized, total, intervals, ai_note
 
-
-def ai_categorize(intervals, total):
-    exe = shutil.which("opencode")
-    if not exe:
-        return None, ""
-    payload = [
-        {
-            "start": iso(i["start"]),
-            "end": iso(i["end"]),
-            "seconds": round(i["seconds"], 1),
-            "app": i["app"],
-            "title": i["title"],
-        }
-        for i in intervals
-    ]
-    prompt = (
-        "You are a time-tracking assistant. I will provide computer activity logs. "
-        "Your goal: assign a single category and tags to each activity interval, and clean up descriptions.\n\n"
-        "RULES:\n"
-        "1. Return ONLY a raw JSON array. No conversational text, no code fences.\n"
-        "2. Each item uses EXACTLY this schema: "
-        '{"start": "ISO", "end": "ISO", "seconds": <number>, "app": "...", '
-        '"title": "...", "description": "...", "category": "...", "tags": ["..."]}.\n'
-        '3. Pick category ONLY from: ' + ", ".join(repr(c) for c in CATEGORIES) + ".\n"
-        "4. 'description' = a cleaned up, human-readable activity summary derived from the title.\n"
-        "5. Keep 'start', 'end' and 'seconds' exactly as provided. Never alter durations.\n"
-        "6. Merge consecutive intervals that share the same theme (e.g. several Firefox entries about the same topic) "
-        "by keeping the start of the first and the end of the last, summing seconds.\n"
-        "7. 'tags' may contain extra labels (e.g. 'research', 'psp'), usually 0-2 items.\n"
-        "8. The sum of all 'seconds' must equal the total session duration.\n\n"
-        "INPUT (JSON array):\n" + json.dumps(payload) + "\n\n"
-        "OUTPUT (JSON array only):\n"
-    )
-    cmd = [exe, "run", prompt]
-    if os.environ.get("WORKLOG_AI_CMD"):
-        import shlex
-
-        cmd = shlex.split(os.environ["WORKLOG_AI_CMD"]) + [prompt]
-    try:
-        out = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=180, env=os.environ.copy()
-        )
-        text = out.stdout if out.returncode == 0 else ""
-    except Exception as exc:
-        return None, f"AI failed: {exc}"
-    ary = extract_json_array(text)
-    if ary is None:
-        return None, "AI returned no parseable JSON."
-    if abs(sum(e.get("seconds", 0) for e in ary) - total) > max(total * 0.02, 2.0):
-        return None, "AI output durations drift from measured total; discarded."
-    return ary, ""
-
-
-def extract_json_array(text):
-    if not text:
-        return None
-    text = re.sub(r"```(?:json)?", "", text)
-    start = text.find("[")
-    end = text.rfind("]")
-    if start == -1 or end < start:
-        return None
-    try:
-        return json.loads(text[start : end + 1])
-    except Exception:
-        return None
-
-
-def build_report(project, start_ts, stop_ts, categorized, ai_note, ai_enabled, session_dir):
-    total = stop_ts - start_ts
-    lines = []
-    lines.append(f"# Worklog: {project}")
-    lines.append("")
-    lines.append(f"- **Started:** {iso(start_ts)}")
-    lines.append(f"- **Ended:** {iso(stop_ts)}")
-    lines.append(f"- **Total:** {fmt_dur(total)}")
-    lines.append(f"- **Raw log:** `{os.path.join(session_dir, 'raw.jsonl')}`")
-    lines.append(f"- **Categorized:** `{os.path.join(session_dir, 'activity.json')}`")
-    lines.append("")
-
-    cat_totals = {}
-    for e in categorized:
-        cat_totals[e["category"]] = cat_totals.get(e["category"], 0) + e["seconds"]
-    lines.append("## Time by category")
-    lines.append("")
-    lines.append("| Category | Time | Share | Intervals |")
-    lines.append("| --- | --- | --- | ---: |")
-    count = {}
-    for e in categorized:
-        count[e["category"]] = count.get(e["category"], 0) + 1
-    for cat in sorted(cat_totals, key=lambda c: -cat_totals[c]):
-        share = 100.0 * cat_totals[cat] / total if total else 0.0
-        lines.append(
-            f"| {cat} | {fmt_dur(cat_totals[cat])} | {share:.1f}% | {count[cat]} |"
-        )
-    lines.append("")
-
-    app_totals = {}
-    for e in categorized:
-        app = e.get("app") or "unknown"
-        app_totals[app] = app_totals.get(app, 0) + e["seconds"]
-    lines.append("## Time by application")
-    lines.append("")
-    lines.append("| Application | Time | Share |")
-    lines.append("| --- | --- | ---: |")
-    for app in sorted(app_totals, key=lambda a: -app_totals[a]):
-        share = 100.0 * app_totals[app] / total if total else 0.0
-        lines.append(f"| {app} | {fmt_dur(app_totals[app])} | {share:.1f}% |")
-    lines.append("")
-
-    lines.append("## Timeline")
-    lines.append("")
-    lines.append("| Start | End | Duration | App | Title | Category |")
-    lines.append("| --- | --- | --- | --- | --- | --- |")
-    for e in categorized:
-        app = e.get("app") or "unknown"
-        title = (e.get("description") or e.get("title") or "").replace("|", "/")
-        lines.append(
-            f"| {e['start'][11:19]} | {e['end'][11:19]} | {fmt_dur(e['seconds'])} "
-            f"| {app} | {title} | {e['category']} |"
-        )
-    lines.append("")
-
-    lines.append("## AI insights")
-    lines.append("")
-    if not ai_enabled:
-        lines.append("_AI disabled for this session._")
-    elif ai_note.startswith("AI failed") or ai_note == "AI categorizer unavailable; used local heuristics.":
-        lines.append(f"_{ai_note}_")
+    total = len(mapped)
+    created = push_entries(env, wid, mapped, projects_by_name, tags_by_name)
+    if created == total and total > 0:
+        CURSOR.write_text(str(cursor + len(pending)))
+        HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now().strftime("%Y-%m")
+        with open(HISTORY_DIR / f"{stamp}.jsonl", "a") as f:
+            for line in pending:
+                f.write(line + "\n")
+        print(f"Synced {created}/{total} entries. Cursor advanced.")
     else:
-        insights = ai_insights(project, total, categorized)
-        lines.append(insights if insights else "_AI insights unavailable._")
-    return "\n".join(lines) + "\n"
-
-
-def ai_insights(project, total, categorized):
-    exe = shutil.which("opencode")
-    if not exe:
-        return ""
-    summary = [
-        {
-            "category": e["category"],
-            "app": e.get("app"),
-            "description": e.get("description"),
-            "seconds": e["seconds"],
-        }
-        for e in categorized
-    ]
-    prompt = (
-        f"You are a work-session reviewer. The user closed a work session on project '{project}' "
-        f"that lasted {fmt_dur(total)}.\n\n"
-        "Write a short structured report (markdown, a few bullet sections, no fluff): "
-        "what the session was mostly about, how time distributed across categories, "
-        "any patterns (tool switching, long blocks), and one practical suggestion.\n\n"
-        "CATEGORIZED ACTIVITY:\n" + json.dumps(summary) + "\n"
-    )
-    try:
-        out = subprocess.run(
-            [exe, "run", prompt],
-            capture_output=True,
-            text=True,
-            timeout=180,
-            env=os.environ.copy(),
-        )
-        return out.stdout.strip() if out.returncode == 0 else ""
-    except Exception:
-        return ""
-
-
-def cmd_stop(args):
-    active = read_active()
-    if not active:
-        return "No active session."
-    _, flag_base, flag_ai = parse_flags(args)
-    if interactive() and flag_base is None:
-        new_base = prompt("Save directory", active["base_dir"])
-    else:
-        new_base = flag_base or active["base_dir"]
-    new_base = os.path.abspath(os.path.expanduser(new_base or "~"))
-    if flag_ai is not None:
-        ai_prompted = flag_ai
-    elif interactive():
-        ai_prompted = prompt_yes("Use AI summary", active["ai"])
-    else:
-        ai_prompted = active["ai"]
-
-    if new_base != os.path.abspath(active["base_dir"]):
-        old_dir = active["session_dir"]
-        new_dir = os.path.join(new_base, "sessions", os.path.basename(old_dir))
-        os.makedirs(new_dir, exist_ok=True)
-        for entry in os.scandir(old_dir):
-            shutil.move(entry.path, os.path.join(new_dir, entry.name))
-        active["session_dir"] = new_dir
-        active["raw"] = os.path.join(new_dir, "raw.jsonl")
-        active["base_dir"] = new_base
-
-    pid = active.get("pid")
-    if pid:
-        try:
-            os.kill(pid, signal.SIGTERM)
-        except (ProcessLookupError, PermissionError):
-            pass
-    time.sleep(0.4)
-    stop_ts = time.time()
-    categorized, _, intervals, ai_note = analyze(
-        active["raw"], active["project"], active["start"], stop_ts, ai_prompted
-    )
-    session_dir = active["session_dir"]
-    total = stop_ts - active["start"]
-    with open(os.path.join(session_dir, "activity.json"), "w") as f:
-        json.dump(
-            {
-                "project": active["project"],
-                "start": iso(active["start"]),
-                "end": iso(stop_ts),
-                "total_seconds": round(total, 1),
-                "ai": ai_prompted,
-                "activities": categorized,
-            },
-            f,
-            indent=2,
-        )
-    report = build_report(
-        active["project"],
-        active["start"],
-        stop_ts,
-        categorized,
-        ai_note,
-        ai_prompted,
-        session_dir,
-    )
-    report_path = os.path.join(session_dir, "report.md")
-    with open(report_path, "w") as f:
-        f.write(report)
-    try:
-        os.remove(active_path())
-    except FileNotFoundError:
-        pass
-    return (
-        f"Session saved.\nCategorized: {session_dir}/activity.json\nReport: {report_path}\n"
-        + ("Note: " + ai_note + "\n" if ai_note else "")
-    )
+        print(f"Pushed {created}/{total}. Cursor NOT advanced (retry on next sync).")
+    return 0
 
 
 def cmd_status():
-    active = read_active()
-    if not active:
-        return "Not recording."
-    elapsed = time.time() - active["start"]
-    return f"Recording: {active['project']} ({fmt_dur(elapsed)} elapsed, AI {'on' if active['ai'] else 'off'})"
-
-
-def cmd_toggle(args):
-    if read_active():
-        return cmd_stop(args)
-    return cmd_start(join_args(args), default_dir(), True)
-
-
-def join_args(args):
-    return " ".join(a for a in args if not a.startswith("--"))
-
-
-def parse_flags(args):
-    project_parts = []
-    base = None
-    ai = None
-    i = 0
-    while i < len(args):
-        a = args[i]
-        if a == "--ai":
-            ai = True
-        elif a == "--no-ai":
-            ai = False
-        elif a == "--dir":
-            i += 1
-            if i < len(args):
-                base = args[i]
-        elif a.startswith("--dir="):
-            base = a[len("--dir="):]
-        else:
-            project_parts.append(a)
-        i += 1
-    return " ".join(project_parts), base, ai
-
-
-def cmd_start_from_args(args):
-    project, base, ai = parse_flags(args)
-    return cmd_start(project, base or default_dir(), ai if ai is not None else True)
+    state = load_state()
+    pending, cursor = read_pending()
+    lines = []
+    if state:
+        elapsed = time.time() - state.get("start", time.time())
+        lines.append(f"Recording: {state.get('app')} ({fmt_dur(elapsed)} since {iso_z(state['start'])})")
+    else:
+        lines.append("Not recording (tracker idle).")
+    lines.append(f"Pending events: {len(pending)}")
+    lines.append(f"Cursor: {cursor}")
+    print("\n".join(lines))
 
 
 def main():
     argv = sys.argv[1:]
-    if argv and argv[0] == "__poll":
-        poll_loop(argv[1])
-        return
     cmd = argv[0] if argv else "status"
     args = argv[1:]
-    if cmd == "start":
-        print(cmd_start_from_args(args))
-    elif cmd in ("stop", "end"):
-        print(cmd_stop(args))
-    elif cmd == "toggle":
-        print(cmd_toggle(args))
+    if cmd == "track":
+        cmd_track()
+    elif cmd == "sync":
+        return cmd_sync()
     elif cmd == "status":
-        print(cmd_status())
+        cmd_status()
     elif cmd in ("help", "--help", "-h"):
-        print("usage: worklog start|stop|toggle|status [--dir=PATH] [--ai|--no-ai]")
+        print("usage: worklog track|sync|status")
+        return 0
     else:
-        print("usage: worklog start|stop|toggle|status [--dir=PATH] [--ai|--no-ai]")
-        sys.exit(1)
+        print("usage: worklog track|sync|status")
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
