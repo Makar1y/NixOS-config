@@ -107,6 +107,8 @@ def current_focus():
             result = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=3, env=env
             )
+            if result.returncode != 0:
+                raise RuntimeError(result.stderr.strip()[:200])
             out = result.stdout.strip()
             data = json.loads(out) if out and out != "null" else None
             if data is None:

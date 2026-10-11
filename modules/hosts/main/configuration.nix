@@ -1,11 +1,12 @@
 { self, inputs, ... }: {
    
    flake.nixosModules.mainConfiguration = { pkgs, lib, ...}: {
-      imports = [
+imports = [
          self.nixosModules.mainHardware
 	self.nixosModules.niri
 	self.nixosModules.worklog
-      ];
+	inputs.niridm.nixosModules.niridm
+       ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -115,6 +116,12 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Niri Display Manager: monitor layouts, hotplug popup, mirror routing
+  programs.NiriDM = {
+    enable = true;
+    autoHotplug = true;
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   ##environment.systemPackages = with pkgs; [
@@ -177,9 +184,12 @@ environment.systemPackages = with pkgs; [
            lsd
            fastfetch
 
-       # System monitors
-           btop
-           bluetuith
+# System monitors
+       btop
+       bluetuith
+
+       # Display mirroring & management
+       wl-mirror
 
        # Media
           spotify

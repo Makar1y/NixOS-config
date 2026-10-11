@@ -47,6 +47,9 @@
 			];
 			binds = import ./_binds.nix;
 		};
+		extraSettings = [
+			{ include = [ { optional = true; } "~/.config/NiriDM/monitors.kdl" ]; }
+		];
 	};
 
 	flake.nixosModules.niri = { pkgs, lib, ... }: {
